@@ -11,17 +11,21 @@ public class GamePanel extends JPanel {
     private final int tileSize = 80;
     Tile[][] map = new Tile[cols][rows];
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        for(int col = 0 ; col < cols ; col++){
-            for(int row = 0 ; row < rows ; row++){
+    public GamePanel() {
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
                 if (row == 0) map[col][row] = new Tile(TerrainTypes.MOUNTAIN);
                 else if (col == 0) map[col][row] = new Tile(TerrainTypes.MOUNTAIN);
                 else map[col][row] = new Tile(TerrainTypes.PLAINS);
+            }
+        }
+    }
 
-
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
                 int x = col * tileSize;
                 int y = row * tileSize;
                 g.setColor(map[col][row].terrain.colour);
