@@ -15,10 +15,10 @@ public enum TerrainTypes{
     public final int dfncBns;
     public final int evsnBns;
 
-    TerrainTypes(Color colour, int mvntCst, int dfncBns, int evsnBns){
+    TerrainTypes(Color colour, int movementCost, int defenceBonus, int evasionBonus){
         this.colour = colour;
-        this.mvntCst = mvntCst;
-        this.dfncBns = dfncBns;
-        this.evsnBns = evsnBns;
+        this.mvntCst = movementCost;
+        this.dfncBns = defenceBonus;
+        this.evsnBns = evasionBonus;
     }
 }
