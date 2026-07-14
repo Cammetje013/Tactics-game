@@ -2,6 +2,8 @@ package tactics;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -12,9 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements MouseListener {
     private final int rows = 15;
     private final int cols = 8;
+    private final int tileSize = 80;
+    Unit selectedUnit = null;
     Tile[][] map = new Tile[rows][cols];
     List<Unit> units = new ArrayList<>();
     Map<Character, TerrainTypes> terrainLookup = new HashMap<>();
@@ -40,12 +44,12 @@ public class GamePanel extends JPanel {
         units.add(new Unit(UnitTypes.MAGE, new Position(6, 7), Teams.PLAYER));
         units.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
 
+        addMouseListener(this);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int tileSize = 80;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 int x = col * tileSize;
@@ -62,5 +66,43 @@ public class GamePanel extends JPanel {
             else g.setColor(Color.BLACK);
             g.fillOval(x + 20, y + 20, tileSize / 2, tileSize / 2);
         }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int col = e.getX() / tileSize;
+        int row = e.getY() / tileSize;
+        selectedUnit = getUnitAt(col, row);
+        System.out.println("Clicked col: " + col + "\nrow: " + row);
+        if (selectedUnit != null)
+            System.out.println("Unit type: " + selectedUnit.unitType);
+        repaint();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    public Unit getUnitAt(int col, int row){
+        for (Unit unit : units){
+            if (unit.position.col == col && unit.position.row == row) return unit;
+        }
+        return null;
     }
 }
