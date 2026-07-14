@@ -2,49 +2,62 @@ package tactics;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class GamePanel extends JPanel {
     private final int rows = 15;
     private final int cols = 8;
     private final int tileSize = 80;
-    Tile[][] map = new Tile[cols][rows];
-    List<Unit> friendlyUnits = new ArrayList<>();
+    Tile[][] map = new Tile[rows][cols];
+    String[] mapLayout;
+    List<Unit> units = new ArrayList<>();
+    Map<Character, TerrainTypes> terrainLookup = new HashMap<>();
 
-    public GamePanel() {
+    public GamePanel() throws IOException, URISyntaxException {
         //Map creation
-        for (int col = 0; col < cols; col++) {
-            for (int row = 0; row < rows; row++) {
-                if (row == 0) map[col][row] = new Tile(TerrainTypes.MOUNTAIN);
-                else if (col == 0) map[col][row] = new Tile(TerrainTypes.MOUNTAIN);
-                else if (col > 5 && row > 5) map[col][row] = new Tile(TerrainTypes.FOREST);
-                else if (col < 4 && row < 2) map[col][row] = new Tile(TerrainTypes.WATER);
-                else if (col == 5 && row < 5) map[col][row] = new Tile(TerrainTypes.MOUNTAIN);
-                else map[col][row] = new Tile(TerrainTypes.PLAINS);
+        terrainLookup.put('M', TerrainTypes.MOUNTAIN);
+        terrainLookup.put('P', TerrainTypes.PLAINS);
+        terrainLookup.put('W', TerrainTypes.WATER);
+        terrainLookup.put('F', TerrainTypes.FOREST);
+
+        List<String> lines =
+                Files.readAllLines(Paths.get(getClass().getClassLoader().getResource("resources/maps/map1").toURI()));
+
+        for (int row = 0; row < lines.size(); row++) {
+            for (int col = 0; col < lines.get(row).length(); col++) {
+                map[row][col] = new Tile(terrainLookup.get(lines.get(row).charAt(col)));
             }
         }
 
         //Unit creation
-        friendlyUnits.add(new Unit(UnitTypes.KNIGHT, new Position(5, 4), Teams.PLAYER));
-        friendlyUnits.add(new Unit(UnitTypes.MAGE, new Position(6, 7), Teams.PLAYER));
-        friendlyUnits.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
+        units.add(new Unit(UnitTypes.KNIGHT, new Position(5, 4), Teams.PLAYER));
+        units.add(new Unit(UnitTypes.MAGE, new Position(6, 7), Teams.PLAYER));
+        units.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
 
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (int col = 0; col < cols; col++) {
-            for (int row = 0; row < rows; row++) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
                 int x = col * tileSize;
                 int y = row * tileSize;
-                g.setColor(map[col][row].terrain.colour);
+                g.setColor(map[row][col].terrain.colour);
                 g.fillRect(x, y, tileSize, tileSize);
             }
         }
-        for (Unit unit : friendlyUnits){
+        for (Unit unit : units){
             int x = unit.position.col * tileSize;
             int y = unit.position.row * tileSize;
             if (unit.unitType == UnitTypes.KNIGHT) g.setColor(Color.DARK_GRAY);
