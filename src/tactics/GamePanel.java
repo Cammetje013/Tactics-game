@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,9 +15,7 @@ import java.util.Map;
 public class GamePanel extends JPanel {
     private final int rows = 15;
     private final int cols = 8;
-    private final int tileSize = 80;
     Tile[][] map = new Tile[rows][cols];
-    String[] mapLayout;
     List<Unit> units = new ArrayList<>();
     Map<Character, TerrainTypes> terrainLookup = new HashMap<>();
 
@@ -49,6 +45,7 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        int tileSize = 80;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 int x = col * tileSize;
