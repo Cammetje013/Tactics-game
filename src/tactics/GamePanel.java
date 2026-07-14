@@ -8,10 +8,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 
 public class GamePanel extends JPanel implements MouseListener {
@@ -31,7 +29,7 @@ public class GamePanel extends JPanel implements MouseListener {
         terrainLookup.put('F', TerrainTypes.FOREST);
 
         List<String> lines =
-                Files.readAllLines(Paths.get(getClass().getClassLoader().getResource("resources/maps/map1").toURI()));
+                Files.readAllLines(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("resources/maps/map1")).toURI()));
 
         for (int row = 0; row < lines.size(); row++) {
             for (int col = 0; col < lines.get(row).length(); col++) {
