@@ -2,7 +2,7 @@ package tactics;
 
 import java.awt.*;
 
-public enum TerrainTypes{
+public enum TerrainTypes {
 
     //PARAMS: colour, movement cost, defence bonus, evasion bonus
     PLAINS(Color.GREEN, 1, 0, 0),
@@ -11,14 +11,14 @@ public enum TerrainTypes{
     MOUNTAIN(Color.GRAY, 99, 3, 1);
 
     public final Color colour;
-    public final int mvntCst;
-    public final int dfncBns;
-    public final int evsnBns;
+    public final int movementCost;
+    public final int defenceBonus;
+    public final int evasionBonus;
 
-    TerrainTypes(Color colour, int movementCost, int defenceBonus, int evasionBonus){
+    TerrainTypes(Color colour, int movementCost, int defenceBonus, int evasionBonus) {
         this.colour = colour;
-        this.mvntCst = movementCost;
-        this.dfncBns = defenceBonus;
-        this.evsnBns = evasionBonus;
+        this.movementCost = movementCost;
+        this.defenceBonus = defenceBonus;
+        this.evasionBonus = evasionBonus;
     }
 }

@@ -20,6 +20,8 @@ public class GamePanel extends JPanel implements MouseListener {
     Tile[][] map = new Tile[rows][cols];
     List<Unit> units = new ArrayList<>();
     Map<Character, TerrainTypes> terrainLookup = new HashMap<>();
+    int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    Map<Position, Integer> reachableTiles = new HashMap<>();
 
     public GamePanel() throws IOException, URISyntaxException {
         //Map creation
@@ -42,6 +44,9 @@ public class GamePanel extends JPanel implements MouseListener {
         units.add(new Unit(UnitTypes.MAGE, new Position(6, 7), Teams.PLAYER));
         units.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
 
+        Map<Position, Integer> reachable = getReachableTiles(units.getFirst());
+        System.out.println("Reachable tiles: " + reachable.size());
+
         addMouseListener(this);
     }
 
@@ -56,13 +61,25 @@ public class GamePanel extends JPanel implements MouseListener {
                 g.fillRect(x, y, tileSize, tileSize);
             }
         }
-        for (Unit unit : units){
+        for (Unit unit : units) {
             int x = unit.position.col * tileSize;
             int y = unit.position.row * tileSize;
             if (unit.unitType == UnitTypes.KNIGHT) g.setColor(Color.DARK_GRAY);
             else if (unit.unitType == UnitTypes.MAGE) g.setColor(Color.PINK);
             else g.setColor(Color.BLACK);
             g.fillOval(x + 20, y + 20, tileSize / 2, tileSize / 2);
+        }
+
+        if (selectedUnit != null) {
+         g.setColor(Color.BLACK);
+         g.drawRect(selectedUnit.position.col * tileSize, selectedUnit.position.row * tileSize, tileSize, tileSize);
+        }
+
+        g.setColor(new Color(255, 140, 0, 120));
+        for (Position pos : reachableTiles.keySet()){
+            int x = pos.col * tileSize;
+            int y = pos.row * tileSize;
+            g.fillRect(x, y, tileSize, tileSize);
         }
     }
 
@@ -73,7 +90,8 @@ public class GamePanel extends JPanel implements MouseListener {
         selectedUnit = getUnitAt(col, row);
         System.out.println("Clicked col: " + col + "\nrow: " + row);
         if (selectedUnit != null)
-            System.out.println("Unit type: " + selectedUnit.unitType);
+            reachableTiles = getReachableTiles(selectedUnit);
+        else reachableTiles = new HashMap<>();
         repaint();
     }
 
@@ -97,10 +115,38 @@ public class GamePanel extends JPanel implements MouseListener {
 
     }
 
-    public Unit getUnitAt(int col, int row){
-        for (Unit unit : units){
+    public Unit getUnitAt(int col, int row) {
+        for (Unit unit : units) {
             if (unit.position.col == col && unit.position.row == row) return unit;
         }
         return null;
+    }
+
+    public Map<Position, Integer> getReachableTiles(Unit unit) {
+        Queue<Position> distances = new LinkedList<>();
+        Map<Position, Integer> costSoFar = new HashMap<>();
+
+        costSoFar.put(unit.position, 0);
+        distances.add(unit.position);
+
+        while (!distances.isEmpty()) {
+            Position current = distances.poll();
+            for (int[] dir : directions) {
+                int newCol = current.col + dir[0];
+                int newRow = current.row + dir[1];
+                if (newCol >= 0 && newCol < cols && newRow >= 0 && newRow < rows) {
+                    int newCost = costSoFar.get(current) + map[newRow][newCol].terrain.movementCost;
+                    if (newCost <= unit.unitType.movement) {
+                        Position neighbour = new Position(newCol, newRow);
+                        if (!costSoFar.containsKey(neighbour) || newCost < costSoFar.get(neighbour)) {
+                            costSoFar.put(neighbour, newCost);
+                            distances.add(neighbour);
+                        }
+                    }
+                }
+            }
+        }
+
+        return costSoFar;
     }
 }

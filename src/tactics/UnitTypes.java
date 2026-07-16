@@ -13,7 +13,7 @@ public enum UnitTypes {
     public final int range;
     public final int movement;
 
-    UnitTypes(int hitpoints, int attack, int defence, int evasion, int range, int movement){
+    UnitTypes(int hitpoints, int attack, int defence, int evasion, int range, int movement) {
         this.hitpoints = hitpoints;
         this.attack = attack;
         this.defence = defence;
