@@ -33,10 +33,8 @@ public class GamePanel extends JPanel implements MouseListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        int rows = 15;
-        for (int row = 0; row < rows; row++) {
-            int cols = 8;
-            for (int col = 0; col < cols; col++) {
+        for (int row = 0; row < levelData.map().rows(); row++) {
+            for (int col = 0; col < levelData.map().cols(); col++) {
                 int x = col * tileSize;
                 int y = row * tileSize;
                 g.setColor(levelData.map().tiles()[row][col].terrain.colour);
@@ -61,6 +59,11 @@ public class GamePanel extends JPanel implements MouseListener {
             g.setColor(Color.BLACK);
             g.drawRect(selectedUnit.position.col * tileSize, selectedUnit.position.row * tileSize, tileSize, tileSize);
         }
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(levelData.map().cols() * tileSize, levelData.map().rows() * tileSize);
     }
 
     @Override
