@@ -6,14 +6,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class GamePanel extends JPanel implements MouseListener {
     private final int tileSize = 80;
     Unit selectedUnit = null;
-    GameMap map = GameMap.loadFrom("resources/maps/map1");
+    LevelData levelData = LevelLoader.load("resources/maps/map1");
     List<Unit> units = new ArrayList<>();
     Map<Position, Integer> reachableTiles = new HashMap<>();
     Pathfinder pathfinder = new Pathfinder();
@@ -25,6 +27,7 @@ public class GamePanel extends JPanel implements MouseListener {
         units.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
 
         addMouseListener(this);
+
     }
 
     @Override
@@ -36,29 +39,27 @@ public class GamePanel extends JPanel implements MouseListener {
             for (int col = 0; col < cols; col++) {
                 int x = col * tileSize;
                 int y = row * tileSize;
-                g.setColor(map.tiles()[row][col].terrain.colour);
+                g.setColor(levelData.map().tiles()[row][col].terrain.colour);
                 g.fillRect(x, y, tileSize, tileSize);
             }
         }
-        for (Unit unit : units) {
+        for (Unit unit : levelData.roster().units()) {
             int x = unit.position.col * tileSize;
             int y = unit.position.row * tileSize;
-            if (unit.unitType == UnitTypes.KNIGHT) g.setColor(Color.DARK_GRAY);
-            else if (unit.unitType == UnitTypes.MAGE) g.setColor(Color.PINK);
-            else g.setColor(Color.BLACK);
+            g.setColor(unit.unitType.colour);
             g.fillOval(x + 20, y + 20, tileSize / 2, tileSize / 2);
         }
 
-        if (selectedUnit != null) {
-         g.setColor(Color.BLACK);
-         g.drawRect(selectedUnit.position.col * tileSize, selectedUnit.position.row * tileSize, tileSize, tileSize);
-        }
-
         g.setColor(new Color(255, 140, 0, 120));
-        for (Position pos : reachableTiles.keySet()){
+        for (Position pos : reachableTiles.keySet()) {
             int x = pos.col * tileSize;
             int y = pos.row * tileSize;
             g.fillRect(x, y, tileSize, tileSize);
+        }
+
+        if (selectedUnit != null) {
+            g.setColor(Color.BLACK);
+            g.drawRect(selectedUnit.position.col * tileSize, selectedUnit.position.row * tileSize, tileSize, tileSize);
         }
     }
 
@@ -69,7 +70,7 @@ public class GamePanel extends JPanel implements MouseListener {
         selectedUnit = getUnitAt(col, row);
         System.out.println("Clicked col: " + col + "\nrow: " + row);
         if (selectedUnit != null)
-            reachableTiles = pathfinder.getReachableTiles(selectedUnit, map);
+            reachableTiles = pathfinder.getReachableTiles(selectedUnit, levelData.map());
         else reachableTiles = new HashMap<>();
         repaint();
     }

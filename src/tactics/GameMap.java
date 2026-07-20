@@ -12,14 +12,17 @@ import java.util.Objects;
 public record GameMap(int rows, int cols, Tile[][] tiles) {
 
     public static GameMap loadFrom(String resourcePath) throws IOException, URISyntaxException {
+        List<String> lines = Files.readAllLines(Paths.get(
+                Objects.requireNonNull(GameMap.class.getClassLoader().getResource(resourcePath)).toURI()));
+        return fromLines(lines);
+    }
+
+    public static GameMap fromLines(List<String> lines) {
         Map<Character, TerrainTypes> terrainLookup = new HashMap<>();
         terrainLookup.put('M', TerrainTypes.MOUNTAIN);
         terrainLookup.put('P', TerrainTypes.PLAINS);
         terrainLookup.put('W', TerrainTypes.WATER);
         terrainLookup.put('F', TerrainTypes.FOREST);
-
-        List<String> lines = Files.readAllLines(Paths.get(
-                Objects.requireNonNull(GameMap.class.getClassLoader().getResource(resourcePath)).toURI()));
 
         int rows = lines.size();
         int cols = lines.getFirst().length();

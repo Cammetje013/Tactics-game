@@ -1,6 +1,6 @@
 import tactics.GamePanel;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 void main() throws IOException, URISyntaxException {
     JFrame gameFrame = new JFrame("Tactics Game");
