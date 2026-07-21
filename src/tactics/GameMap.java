@@ -44,4 +44,8 @@ public record GameMap(int rows, int cols, Tile[][] tiles) {
     public int movementCostAt(int row, int col) {
         return tiles[row][col].terrain.movementCost;
     }
+
+    public boolean blocksLineOfFire(int row, int col) {
+        return tiles[row][col].terrain.blocksLineOfFire;
+    }
 }

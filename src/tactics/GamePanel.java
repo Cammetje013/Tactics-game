@@ -6,28 +6,21 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
 public class GamePanel extends JPanel implements MouseListener {
     private final int tileSize = 80;
+    private Mode mode = Mode.NONE;
+
     Unit selectedUnit = null;
     LevelData levelData = LevelLoader.load("resources/maps/map1");
-    List<Unit> units = new ArrayList<>();
     Map<Position, Integer> reachableTiles = new HashMap<>();
-    Pathfinder pathfinder = new Pathfinder();
+    Pathfinder rangeFinder = new Pathfinder();
 
     public GamePanel() throws IOException, URISyntaxException {
-        //Unit creation
-        units.add(new Unit(UnitTypes.KNIGHT, new Position(5, 4), Teams.PLAYER));
-        units.add(new Unit(UnitTypes.MAGE, new Position(6, 7), Teams.PLAYER));
-        units.add(new Unit(UnitTypes.RANGER, new Position(2, 7), Teams.PLAYER));
-
         addMouseListener(this);
-
     }
 
     @Override
@@ -70,11 +63,46 @@ public class GamePanel extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int col = e.getX() / tileSize;
         int row = e.getY() / tileSize;
-        selectedUnit = getUnitAt(col, row);
-        System.out.println("Clicked col: " + col + "\nrow: " + row);
-        if (selectedUnit != null)
-            reachableTiles = pathfinder.getReachableTiles(selectedUnit, levelData.map());
-        else reachableTiles = new HashMap<>();
+        if (mode == Mode.NONE) {
+            selectedUnit = getUnitAt(col, row);
+            if (selectedUnit != null)
+                new UnitActionMenu(() -> {
+                    mode = Mode.MOVE;
+                    reachableTiles = rangeFinder.getReachableTiles(selectedUnit, levelData.map());
+                    repaint();
+                },
+                        () -> {
+                            mode = Mode.ATTACK;
+                            reachableTiles = rangeFinder.getAttackRange(selectedUnit, levelData.map());
+                            repaint();
+                        }
+                ).show(this, e.getX(), e.getY());
+            else reachableTiles = new HashMap<>();
+            repaint();
+        } else if (mode == Mode.MOVE) {
+            if (selectedUnit != null && getUnitAt(col, row) == null && reachableTiles.containsKey(new Position(col, row))) {
+                selectedUnit.moveTo(new Position(col, row));
+                reachableTiles = new HashMap<>();
+                selectedUnit = null;
+                mode = Mode.NONE;
+            }
+        } else if (mode == Mode.ATTACK) {
+            Unit enemyUnit = getUnitAt(col, row);
+            if (enemyUnit != null) {
+                if (!enemyUnit.team.equals(selectedUnit.team) && reachableTiles.containsKey(new Position(col, row))) {
+                    selectedUnit.attackUnit(enemyUnit);
+                    levelData.roster().removeDeadUnits();
+                    reachableTiles = new HashMap<>();
+                    selectedUnit = null;
+                    mode = Mode.NONE;
+                    repaint();
+                }
+            } else {
+                reachableTiles = new HashMap<>();
+                mode = Mode.NONE;
+                repaint();
+            }
+        }
         repaint();
     }
 
@@ -99,7 +127,7 @@ public class GamePanel extends JPanel implements MouseListener {
     }
 
     public Unit getUnitAt(int col, int row) {
-        for (Unit unit : units) {
+        for (Unit unit : levelData.roster().units()) {
             if (unit.position.col == col && unit.position.row == row) return unit;
         }
         return null;

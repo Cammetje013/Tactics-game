@@ -34,4 +34,8 @@ public record UnitRoster(List<Unit> units) {
         }
         return null;
     }
+
+    public void removeDeadUnits() {
+        units.removeIf(Unit::isDead);
+    }
 }

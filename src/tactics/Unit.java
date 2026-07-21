@@ -14,4 +14,16 @@ public class Unit {
         this.team = team;
 
     }
+
+    public void moveTo(Position position) {
+        this.position = position;
+    }
+
+    public void attackUnit(Unit enemyUnit) {
+        enemyUnit.currentHitpoints -= this.unitType.attack;
+    }
+
+    public static boolean isDead(Unit unit) {
+        return unit.currentHitpoints <= 0;
+    }
 }
