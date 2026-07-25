@@ -41,10 +41,6 @@ public record GameMap(int rows, int cols, Tile[][] tiles) {
         return col >= 0 && col < cols && row >= 0 && row < rows;
     }
 
-    public int movementCostAt(int row, int col) {
-        return tiles[row][col].terrain.movementCost;
-    }
-
     public boolean blocksLineOfFire(int row, int col) {
         return tiles[row][col].terrain.blocksLineOfFire;
     }
