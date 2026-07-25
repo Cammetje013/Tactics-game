@@ -1,8 +1,8 @@
-package tactics;
+package tactics.model;
 
 public class Tile {
 
-    TerrainTypes terrain;
+    public TerrainTypes terrain;
 
     public Tile(TerrainTypes terrain) {
         this.terrain = terrain;

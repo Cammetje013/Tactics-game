@@ -1,13 +1,13 @@
-package tactics;
+package tactics.model;
 
 public class Unit {
 
-    UnitTypes unitType;
-    int currentHitpoints;
-    boolean hasMoved;
-    boolean hasAttacked;
-    Position position;
-    Teams team;
+    public UnitTypes unitType;
+    public int currentHitpoints;
+    public boolean hasMoved;
+    public boolean hasAttacked;
+    public Position position;
+    public Teams team;
 
     public Unit(UnitTypes unitType, Position startPosition, Teams team) {
         this.unitType = unitType;

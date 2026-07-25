@@ -1,4 +1,8 @@
-package tactics;
+package tactics.level;
+
+import tactics.model.GameMap;
+import tactics.model.LevelData;
+import tactics.model.UnitRoster;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

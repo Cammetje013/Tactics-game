@@ -1,4 +1,4 @@
-package tactics;
+package tactics.ui;
 
 import javax.swing.*;
 

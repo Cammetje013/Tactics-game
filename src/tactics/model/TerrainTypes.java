@@ -1,4 +1,4 @@
-package tactics;
+package tactics.model;
 
 import java.awt.*;
 

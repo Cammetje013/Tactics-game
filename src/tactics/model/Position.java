@@ -1,11 +1,11 @@
-package tactics;
+package tactics.model;
 
 import java.util.Objects;
 
 public class Position {
 
-    int col;
-    int row;
+    public int col;
+    public int row;
 
     public Position(int col, int row) {
         this.col = col;

@@ -1,4 +1,15 @@
-package tactics;
+package tactics.ui;
+
+import tactics.ai.CpuController;
+import tactics.level.LevelLoader;
+import tactics.model.GameState;
+import tactics.model.LevelData;
+import tactics.model.Position;
+import tactics.model.Teams;
+import tactics.model.TerrainTypes;
+import tactics.model.Unit;
+import tactics.pathfinding.Pathfinder;
+import tactics.render.TileSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +32,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
     Pathfinder rangeFinder = new Pathfinder();
     TileSet tileSet = TileSet.loadFrom("resources/tilemaps/Tileset.png");
     Position hoveredTile = null;
+    GameState gameState = new GameState();
+    CpuController cpuController = new CpuController();
 
     public GamePanel() throws IOException, URISyntaxException {
         addMouseListener(this);
@@ -119,6 +132,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
             g.setColor(unit.unitType.colour);
             g.fillOval(x, y, tileSize / 2, tileSize / 2);
         }
+
+        g2.scale(1 / scale, 1 / scale);
+        g.setColor(Color.BLACK);
+        g.drawString("Turn " + gameState.turnNumber() + " - " + gameState.currentTeam(), 10, 20);
     }
 
     @Override
@@ -137,7 +154,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
         int col = clicked.col;
         int row = clicked.row;
         if (mode == Mode.NONE) {
-            selectedUnit = getUnitAt(col, row);
+            Unit clickedUnit = getUnitAt(col, row);
+            selectedUnit = (clickedUnit != null && clickedUnit.team == gameState.currentTeam()) ? clickedUnit : null;
             if (selectedUnit != null) {
                 boolean canMove = !selectedUnit.hasMoved;
                 boolean canAttack = !selectedUnit.hasAttacked;
@@ -161,6 +179,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
                 reachableTiles = new HashMap<>();
                 selectedUnit = null;
                 mode = Mode.NONE;
+                checkAutoEndTurn();
             }
         } else if (mode == Mode.ATTACK) {
             Unit enemyUnit = getUnitAt(col, row);
@@ -171,6 +190,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
                     reachableTiles = new HashMap<>();
                     selectedUnit = null;
                     mode = Mode.NONE;
+                    checkAutoEndTurn();
                     repaint();
                 }
             } else {
@@ -213,5 +233,26 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
             if (unit.position.col == col && unit.position.row == row) return unit;
         }
         return null;
+    }
+
+    public void endTurn() {
+        selectedUnit = null;
+        reachableTiles = new HashMap<>();
+        mode = Mode.NONE;
+        gameState.endTurn(levelData.roster());
+        repaint();
+        if (gameState.currentTeam() == Teams.CPU) {
+            cpuController.takeTurn(gameState, levelData.roster(), levelData.map(), rangeFinder);
+            endTurn();
+        }
+    }
+
+    private void checkAutoEndTurn() {
+        for (Unit unit : levelData.roster().units()) {
+            if (unit.team == gameState.currentTeam() && !(unit.hasMoved && unit.hasAttacked)) {
+                return;
+            }
+        }
+        endTurn();
     }
 }

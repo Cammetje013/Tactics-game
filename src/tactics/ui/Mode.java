@@ -1,4 +1,4 @@
-package tactics;
+package tactics.ui;
 
 public enum Mode {
     NONE,
