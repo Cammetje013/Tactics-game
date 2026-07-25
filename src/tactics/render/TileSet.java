@@ -1,4 +1,6 @@
-package tactics;
+package tactics.render;
+
+import tactics.model.TerrainTypes;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

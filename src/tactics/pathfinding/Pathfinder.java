@@ -1,4 +1,8 @@
-package tactics;
+package tactics.pathfinding;
+
+import tactics.model.GameMap;
+import tactics.model.Position;
+import tactics.model.Unit;
 
 import java.util.HashMap;
 import java.util.LinkedList;

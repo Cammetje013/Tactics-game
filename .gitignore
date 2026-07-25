@@ -3,6 +3,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+CLAUDE.md
 
 ### Eclipse ###
 .apt_generated

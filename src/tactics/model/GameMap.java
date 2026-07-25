@@ -1,4 +1,4 @@
-package tactics;
+package tactics.model;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
