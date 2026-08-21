@@ -5,6 +5,12 @@ out/
 .kotlin
 CLAUDE.md
 
+### Gradle ###
+.gradle/
+build/
+core/build/
+lwjgl3/build/
+
 ### Eclipse ###
 .apt_generated
 .classpath

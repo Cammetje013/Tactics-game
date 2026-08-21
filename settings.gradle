@@ -1,0 +1,4 @@
+rootProject.name = 'tactics-game'
+
+include 'core'
+include 'lwjgl3'

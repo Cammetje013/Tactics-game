@@ -1,0 +1,17 @@
+allprojects {
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(23)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+ext {
+    gdxVersion = '1.14.2'
+}
